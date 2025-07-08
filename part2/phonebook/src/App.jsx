@@ -3,12 +3,14 @@ import Filter from './components/Filter'
 import Form from './components/Form'
 import Persons from './components/Persons'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [newNotificacion, setNewNotification] = useState({message: null, className: ''})
 
   const initialRender = () => {
     personService.getPersons()
@@ -33,27 +35,46 @@ const App = () => {
             persons.map((person) => 
               (person.id == returnedPerson.id)? returnedPerson : person)
         )})
-        .catch('Couldnt update the record')
+        .catch(() => {
+          setNewNotification({message: `Couldnt update the record for ${newName}`, className:'error'})
+          })
       }
     }else{
       personService.createPerson(newPerson)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
-    })
-      .catch("Couldnt create Record")
+
+    }).then((returnedPerson) => {
+      setNewNotification({message: `Record created for ${returnedPerson}`, className:'success'})
+    }
+    ).then(() => {
+      setTimeout(() => {
+        setNewNotification({
+          message: null,
+          className: ''
+        })
+      }, 5000)
+    }
+    )
+      .catch(() => {
+        setNewNotification({message: `Couldnt create the record for ${newName}`, className:'error'})
+        })
     }
     setNewName('')
     setNewNumber('')
   }
 
-  const deleteRecord = (personId) => {
+  const deleteRecord = (personId, personName) => {
     const resp = confirm("Are you sure?")
     if(resp){
       personService.deletePerson(personId)
       .then(returnedPerson => {
-        setPersons(persons.filter(person => person.id != returnedPerson.id))
+        setPersons(persons.filter(person => person.id !== returnedPerson.id))
       })
-      .catch(console.log("Cant delete the record"))
+      .catch(() => {
+        setNewNotification({message: `${personName} is already deleted on the database.`, className:'error'})
+        }
+        )
     }
     else return
   }
@@ -75,6 +96,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={newNotificacion.message} className={newNotificacion.className}/>
       <Filter onChange={handleFilterChange} value={newFilter} />
       <Form onSubmit={addRecord} onChangeName={handleNameChange} onChangeNumber={handleNumberChange} numberValue={newNumber} nameValue={newName} /> 
       <h2>Numbers</h2>
