@@ -43,9 +43,9 @@ const App = () => {
       personService.createPerson(newPerson)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
-
+        return returnedPerson
     }).then((returnedPerson) => {
-      setNewNotification({message: `Record created for ${returnedPerson}`, className:'success'})
+      setNewNotification({message: `Record created for ${returnedPerson.name}`, className:'success'})
     }
     ).then(() => {
       setTimeout(() => {
@@ -55,9 +55,14 @@ const App = () => {
         })
       }, 5000)
     }
-    )
-      .catch(() => {
+    ).catch(() => {
         setNewNotification({message: `Couldnt create the record for ${newName}`, className:'error'})
+        setTimeout(() => {
+          setNewNotification({
+            message: null,
+            className: ''
+          })
+        }, 5000)
         })
     }
     setNewName('')
@@ -68,10 +73,12 @@ const App = () => {
     const resp = confirm("Are you sure?")
     if(resp){
       personService.deletePerson(personId)
-      .then(returnedPerson => {
+      .then((returnedPerson) => {
+        setNewNotification({message: `Record deleted for ${returnedPerson.name}`, className:'success'})
         setPersons(persons.filter(person => person.id !== returnedPerson.id))
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e)
         setNewNotification({message: `${personName} is already deleted on the database.`, className:'error'})
         }
         )
