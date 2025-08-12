@@ -34,10 +34,26 @@ const App = () => {
           setPersons(
             persons.map((person) => 
               (person.id == returnedPerson.id)? returnedPerson : person)
-        )})
-        .catch(() => {
-          setNewNotification({message: `Couldnt update the record for ${newName}`, className:'error'})
+        )
+        setNewNotification({message: `Updated number for record ${returnedPerson.name}`, className:'success'})
+        setTimeout(() => {
+          setNewNotification({
+            message: null,
+            className: ''
           })
+        }, 5000)
+      }
+      )
+        .catch((e) => {
+          console.log(e)
+          setNewNotification({message: `Couldnt update the record for ${newName}`, className:'error'})
+          setTimeout(() => {
+            setNewNotification({
+              message: null,
+              className: ''
+            })
+          }, 5000)
+        })
       }
     }else{
       personService.createPerson(newPerson)
@@ -73,13 +89,25 @@ const App = () => {
     const resp = confirm("Are you sure?")
     if(resp){
       personService.deletePerson(personId)
-      .then((returnedPerson) => {
-        setNewNotification({message: `Record deleted for ${returnedPerson.name}`, className:'success'})
-        setPersons(persons.filter(person => person.id !== returnedPerson.id))
+      .then(() => {
+        setNewNotification({message: `Record deleted for ${personName}`, className:'success'})
+        setPersons(persons.filter(person => person.id !== personId))
+        setTimeout(() => {
+          setNewNotification({
+            message: null,
+            className: ''
+          })
+        }, 5000)
       })
       .catch((e) => {
         console.log(e)
         setNewNotification({message: `${personName} is already deleted on the database.`, className:'error'})
+        setTimeout(() => {
+          setNewNotification({
+            message: null,
+            className: ''
+          })
+        }, 5000)
         }
         )
     }
