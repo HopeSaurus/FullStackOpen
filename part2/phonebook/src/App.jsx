@@ -71,8 +71,8 @@ const App = () => {
         })
       }, 5000)
     }
-    ).catch(() => {
-        setNewNotification({message: `Couldnt create the record for ${newName}`, className:'error'})
+    ).catch((error) => {
+        setNewNotification({message: error.response.data.error, className:'error'})
         setTimeout(() => {
           setNewNotification({
             message: null,
