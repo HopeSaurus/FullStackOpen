@@ -1,19 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose')
-
+const config = require('./utils/config')
 const app = express()
 
-const blogSchema = mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-})
+const Blog = require('./models/blog')
 
-const Blog = mongoose.model('Blog', blogSchema)
-
-const mongoUrl = 'mongodb+srv://hopefulxime:z9dJbSxyTdGPJARU@fullstackopen.qieypkk.mongodb.net/?retryWrites=true&w=majority&appName=fullstackopen'
-mongoose.connect(mongoUrl)
+mongoose.connect(config.MONGODB_URL)
 
 app.use(express.json())
 
